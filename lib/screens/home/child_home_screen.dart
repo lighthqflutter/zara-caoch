@@ -1,9 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../models/problem.dart';
+import '../../services/session/session_service.dart';
 
 /// Child home screen - activity selection
-class ChildHomeScreen extends StatelessWidget {
+class ChildHomeScreen extends StatefulWidget {
   const ChildHomeScreen({super.key});
+
+  @override
+  State<ChildHomeScreen> createState() => _ChildHomeScreenState();
+}
+
+class _ChildHomeScreenState extends State<ChildHomeScreen> {
+  DifficultyLevel _currentLevel = DifficultyLevel.level1;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentLevel();
+  }
+
+  Future<void> _loadCurrentLevel() async {
+    // TODO: Get actual user ID from auth
+    final sessionService = SessionService(userId: 'demo_user');
+    final level = await sessionService.getCurrentDifficultyLevel();
+
+    if (mounted) {
+      setState(() {
+        _currentLevel = level;
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,14 +62,18 @@ class ChildHomeScreen extends StatelessWidget {
               _ActivityCard(
                 icon: Icons.calculate,
                 title: 'Math Practice',
-                subtitle: '2 problems ready',
+                subtitle: _isLoading
+                    ? 'Loading...'
+                    : '${_currentLevel.description} - 2 problems ready',
                 color: Colors.blue,
+                isLocked: _isLoading,
                 onTap: () {
-                  // TODO: Navigate to math practice
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Math practice coming soon!'),
-                    ),
+                  context.push(
+                    '/math-practice/problems',
+                    extra: {
+                      'difficultyLevel': _currentLevel,
+                      'problemCount': 2,
+                    },
                   );
                 },
               ),
