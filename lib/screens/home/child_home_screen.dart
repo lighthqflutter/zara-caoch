@@ -92,7 +92,7 @@ class _ActivityCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 28,
-                backgroundColor: color.withOpacity(0.2),
+                backgroundColor: color.withValues(alpha: 0.2),
                 child: Icon(
                   isLocked ? Icons.lock : icon,
                   size: 32,

@@ -71,7 +71,7 @@ class ParentDashboardScreen extends StatelessWidget {
             child: ListTile(
               leading: CircleAvatar(
                 backgroundColor:
-                    Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+                    Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2),
                 child: Icon(
                   Icons.upload_file,
                   color: Theme.of(context).colorScheme.secondary,
@@ -97,7 +97,7 @@ class ParentDashboardScreen extends StatelessWidget {
             child: ListTile(
               leading: CircleAvatar(
                 backgroundColor:
-                    Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                    Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                 child: Icon(
                   Icons.settings,
                   color: Theme.of(context).colorScheme.primary,

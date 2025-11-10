@@ -92,7 +92,7 @@ class _ParentLoginScreenState extends State<ParentLoginScreen> {
                         ),
                         onPressed: () {
                           setState(() {
-                            _isPasswordVisible = !_isPasswordVisible,
+                            _isPasswordVisible = !_isPasswordVisible;
                           });
                         },
                       ),
