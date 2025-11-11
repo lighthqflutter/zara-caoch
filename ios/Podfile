@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-# platform :ios, '12.0'
+platform :ios, '13.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -29,8 +29,14 @@ flutter_ios_podfile_setup
 
 target 'Runner' do
   use_frameworks!
+  use_modular_headers!
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+
+  # Pin gRPC to newer versions compatible with Firebase
+  pod 'gRPC-Core', '~> 1.62.0'
+  pod 'gRPC-C++', '~> 1.62.0'
+
   target 'RunnerTests' do
     inherit! :search_paths
   end
@@ -39,5 +45,66 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+      config.build_settings['SWIFT_VERSION'] = '5.0'
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+
+      # Additional fixes for Xcode 15+ and gRPC compilation
+      config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
+        'COCOAPODS=1'
+      ]
+    end
+
+    # CRITICAL FIX: Remove unsupported '-G' flag from BoringSSL-GRPC for simulator builds
+    if target.name == 'BoringSSL-GRPC'
+      target.source_build_phase.files.each do |file|
+        if file.settings && file.settings['COMPILER_FLAGS']
+          flags = file.settings['COMPILER_FLAGS'].split
+          flags.reject! { |flag| flag.include?('-G') }
+          file.settings['COMPILER_FLAGS'] = flags.join(' ')
+        end
+      end
+    end
+
+    # Fix for gRPC template keyword issue in Xcode 15+
+    if target.name == 'gRPC-Core' || target.name == 'gRPC-C++'
+      pods_root = installer.pods_project.project_dir.parent
+      possible_paths = [
+        File.join(pods_root, "#{target.name}/src/core/lib/promise/detail/basic_seq.h"),
+        File.join(pods_root, "Pods/#{target.name}/src/core/lib/promise/detail/basic_seq.h"),
+        File.join(File.dirname(__FILE__), "Pods/#{target.name}/src/core/lib/promise/detail/basic_seq.h")
+      ]
+
+      basic_seq_file = nil
+      possible_paths.each do |path|
+        if File.exist?(path)
+          basic_seq_file = path
+          break
+        end
+      end
+
+      if basic_seq_file
+        puts "Applying #{target.name} template keyword fix to basic_seq.h at: #{basic_seq_file}"
+        content = File.read(basic_seq_file)
+
+        # Fix the template keyword issue on line ~103
+        original_pattern = 'Traits::template CallSeqFactory(f_, *cur_, std::move(arg))'
+        replacement = 'Traits::CallSeqFactory(f_, *cur_, std::move(arg))'
+
+        if content.include?(original_pattern)
+          content.gsub!(original_pattern, replacement)
+          File.write(basic_seq_file, content)
+          puts "#{target.name} template keyword fix applied successfully"
+        else
+          puts "#{target.name} template keyword already fixed or pattern not found"
+        end
+      else
+        puts "#{target.name} basic_seq.h file not found at any expected location"
+      end
+    end
   end
 end
