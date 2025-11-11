@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../models/session.dart';
+import '../../services/voice/tts_service.dart';
 
 /// Screen showing session summary and results
 class SessionSummaryScreen extends StatefulWidget {
@@ -21,6 +22,7 @@ class _SessionSummaryScreenState extends State<SessionSummaryScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
+  final TTSService _tts = TTSService();
   bool _isSaving = true;
 
   @override
@@ -46,12 +48,27 @@ class _SessionSummaryScreenState extends State<SessionSummaryScreen>
         _isSaving = false;
       });
       _animationController.forward();
+      _speakSummary();
     }
+  }
+
+  Future<void> _speakSummary() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final accuracy = _calculateAccuracy();
+    final correct = widget.attempts.where((a) => a.isCorrect).length;
+    final total = widget.attempts.length;
+
+    await _tts.speakSummary(
+      correct: correct,
+      total: total,
+      accuracy: accuracy,
+    );
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _tts.stop();
     super.dispose();
   }
 

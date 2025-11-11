@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../models/problem.dart';
 import '../../services/problem/problem_generator.dart';
+import '../../services/voice/tts_service.dart';
 
 /// Screen displaying math problems for the child to solve
 class ProblemDisplayScreen extends StatefulWidget {
@@ -21,11 +22,13 @@ class ProblemDisplayScreen extends StatefulWidget {
 class _ProblemDisplayScreenState extends State<ProblemDisplayScreen> {
   late List<MathProblem> _problems;
   final ProblemGenerator _generator = ProblemGenerator();
+  final TTSService _tts = TTSService();
 
   @override
   void initState() {
     super.initState();
     _generateProblems();
+    _speakWelcome();
   }
 
   void _generateProblems() {
@@ -33,6 +36,18 @@ class _ProblemDisplayScreenState extends State<ProblemDisplayScreen> {
       difficulty: widget.difficultyLevel,
       count: widget.problemCount,
     );
+  }
+
+  Future<void> _speakWelcome() async {
+    // Small delay for screen to settle
+    await Future.delayed(const Duration(milliseconds: 500));
+    await _tts.speakMathWelcome(widget.problemCount);
+  }
+
+  @override
+  void dispose() {
+    _tts.stop();
+    super.dispose();
   }
 
   @override

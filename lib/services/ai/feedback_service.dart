@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../models/problem.dart';
 import '../../models/session.dart';
+import '../../core/config/env_config.dart';
 
 /// AI-generated feedback for a problem attempt
 class AIFeedback {
@@ -19,9 +20,9 @@ class AIFeedback {
 /// Service for generating encouraging AI feedback using OpenAI
 class FeedbackService {
   static const String _apiUrl = 'https://api.openai.com/v1/chat/completions';
-  final String _apiKey;
 
-  FeedbackService({required String apiKey}) : _apiKey = apiKey;
+  /// Get API key from environment configuration
+  String get _apiKey => EnvConfig.openAiApiKey;
 
   /// Generate feedback for a problem attempt
   Future<AIFeedback> generateFeedback({

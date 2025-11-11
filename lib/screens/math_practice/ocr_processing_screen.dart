@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../models/problem.dart';
 import '../../services/ocr/ocr_service.dart';
+import '../../services/voice/tts_service.dart';
 
 /// Screen for processing OCR and deciding next step
 class OCRProcessingScreen extends StatefulWidget {
@@ -20,12 +21,25 @@ class OCRProcessingScreen extends StatefulWidget {
 
 class _OCRProcessingScreenState extends State<OCRProcessingScreen> {
   final OCRService _ocrService = OCRService();
+  final TTSService _tts = TTSService();
   String _statusMessage = 'Reading your work...';
 
   @override
   void initState() {
     super.initState();
+    _speakProcessing();
     _processImage();
+  }
+
+  Future<void> _speakProcessing() async {
+    await _tts.speakProcessing();
+  }
+
+  @override
+  void dispose() {
+    _tts.stop();
+    _ocrService.dispose();
+    super.dispose();
   }
 
   Future<void> _processImage() async {
@@ -75,12 +89,6 @@ class _OCRProcessingScreenState extends State<OCRProcessingScreen> {
         );
       }
     }
-  }
-
-  @override
-  void dispose() {
-    _ocrService.dispose();
-    super.dispose();
   }
 
   @override

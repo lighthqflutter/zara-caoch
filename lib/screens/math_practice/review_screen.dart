@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../models/problem.dart';
 import '../../models/session.dart';
 import '../../services/ai/feedback_service.dart';
+import '../../services/voice/tts_service.dart';
 
 /// Screen showing AI feedback on problem attempts
 class ReviewScreen extends StatefulWidget {
@@ -25,8 +26,15 @@ class ReviewScreen extends StatefulWidget {
 class _ReviewScreenState extends State<ReviewScreen> {
   late List<ProblemAttempt> _attempts;
   late List<AIFeedback> _feedbacks;
+  final TTSService _tts = TTSService();
   bool _isLoading = true;
   int _currentIndex = 0;
+
+  @override
+  void dispose() {
+    _tts.stop();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -53,9 +61,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
       },
     );
 
-    // Generate AI feedback (need API key from environment)
-    // For now, use fallback feedback
-    final feedbackService = FeedbackService(apiKey: ''); // TODO: Add API key
+    // Generate AI feedback using environment config
+    final feedbackService = FeedbackService();
 
     _feedbacks = [];
     for (final attempt in _attempts) {
@@ -70,6 +77,24 @@ class _ReviewScreenState extends State<ReviewScreen> {
     setState(() {
       _isLoading = false;
     });
+
+    // Speak first problem feedback
+    _speakCurrentFeedback();
+  }
+
+  Future<void> _speakCurrentFeedback() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    await _tts.speakReviewingProblem(_currentIndex + 1, _attempts.length);
+
+    await Future.delayed(const Duration(milliseconds: 800));
+    final feedback = _feedbacks[_currentIndex];
+    final attempt = _attempts[_currentIndex];
+
+    if (attempt.isCorrect) {
+      await _tts.speakCorrectFeedback();
+    } else {
+      await _tts.speakIncorrectFeedback(feedback.message);
+    }
   }
 
   void _nextProblem() {
@@ -77,6 +102,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
       setState(() {
         _currentIndex++;
       });
+      _speakCurrentFeedback();
     } else {
       // All problems reviewed - go to summary
       _goToSummary();

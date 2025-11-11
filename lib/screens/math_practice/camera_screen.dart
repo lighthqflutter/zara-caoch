@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
 import '../../models/problem.dart';
+import '../../services/voice/tts_service.dart';
 
 /// Screen for capturing photos of solved math problems
 class CameraScreen extends StatefulWidget {
@@ -19,8 +20,26 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreenState extends State<CameraScreen> {
   final ImagePicker _picker = ImagePicker();
+  final TTSService _tts = TTSService();
   XFile? _capturedImage;
   bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _speakInstructions();
+  }
+
+  Future<void> _speakInstructions() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    await _tts.speakCameraInstructions();
+  }
+
+  @override
+  void dispose() {
+    _tts.stop();
+    super.dispose();
+  }
 
   Future<void> _takePicture() async {
     try {
