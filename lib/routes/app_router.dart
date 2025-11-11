@@ -10,6 +10,8 @@ import '../screens/math_practice/ocr_processing_screen.dart';
 import '../screens/math_practice/typed_input_screen.dart';
 import '../screens/math_practice/review_screen.dart';
 import '../screens/math_practice/session_summary_screen.dart';
+import '../screens/settings/settings_screen.dart';
+import '../screens/onboarding/tutorial_screen.dart';
 import '../models/problem.dart';
 import '../models/session.dart';
 
@@ -37,6 +39,14 @@ class AppRouter {
       GoRoute(
         path: '/parent-dashboard',
         builder: (context, state) => const ParentDashboardScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/tutorial',
+        builder: (context, state) => const TutorialScreen(),
       ),
       // Math practice flow
       GoRoute(

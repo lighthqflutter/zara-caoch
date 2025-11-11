@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../services/preferences/preferences_service.dart';
 
 /// Splash screen shown during app initialization
 class SplashScreen extends StatefulWidget {
@@ -13,15 +14,23 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _navigateToRoleSelection();
+    _navigateToNextScreen();
   }
 
-  Future<void> _navigateToRoleSelection() async {
+  Future<void> _navigateToNextScreen() async {
     // Wait for 2 seconds
     await Future.delayed(const Duration(seconds: 2));
 
+    // Check if tutorial has been completed
+    final prefsService = PreferencesService(userId: 'demo_user');
+    final tutorialCompleted = await prefsService.isTutorialCompleted();
+
     if (mounted) {
-      context.go('/role-selection');
+      if (tutorialCompleted) {
+        context.go('/role-selection');
+      } else {
+        context.go('/tutorial');
+      }
     }
   }
 
