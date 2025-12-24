@@ -56,6 +56,12 @@ post_install do |installer|
 
       # Build settings for simulator compatibility
       config.build_settings['ONLY_ACTIVE_ARCH'] = 'NO'
+
+      # Fix for dSYM warnings in TestFlight validation
+      # Generate debug symbols for all configurations
+      config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
+      config.build_settings['COPY_PHASE_STRIP'] = 'NO'
+      config.build_settings['STRIP_INSTALLED_PRODUCT'] = 'NO'
     end
 
     # CRITICAL FIX: Remove unsupported '-G' flag from BoringSSL-GRPC for simulator builds
