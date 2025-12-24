@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:go_router/go_router.dart';
 import '../screens/splash/splash_screen.dart';
 import '../screens/role_selection/role_selection_screen.dart';
@@ -11,6 +12,8 @@ import '../screens/math_practice/typed_input_screen.dart';
 import '../screens/math_practice/ocr_review_screen.dart';
 import '../screens/math_practice/review_screen.dart';
 import '../screens/math_practice/session_summary_screen.dart';
+import '../screens/math_practice/drawing_canvas_screen.dart';
+import '../screens/math_practice/drawing_review_screen.dart';
 import '../services/ocr/ocr_service.dart';
 import '../screens/settings/settings_screen.dart';
 import '../screens/onboarding/tutorial_screen.dart';
@@ -121,6 +124,23 @@ class AppRouter {
           return SessionSummaryScreen(
             attempts: extra['attempts'] as List<ProblemAttempt>,
             photoPath: extra['photoPath'] as String,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/math-practice/drawing-canvas',
+        builder: (context, state) {
+          final problems = state.extra as List<MathProblem>;
+          return DrawingCanvasScreen(problems: problems);
+        },
+      ),
+      GoRoute(
+        path: '/math-practice/drawing-review',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return DrawingReviewScreen(
+            problems: extra['problems'] as List<MathProblem>,
+            drawings: extra['drawings'] as List<Uint8List>,
           );
         },
       ),

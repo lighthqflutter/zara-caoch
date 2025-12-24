@@ -96,14 +96,14 @@ class _ProblemDisplayScreenState extends State<ProblemDisplayScreen> {
                 child: Row(
                   children: [
                     Icon(
-                      Icons.info_outline,
+                      Icons.touch_app,
                       color: Colors.blue.shade700,
                       size: 32,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Solve these problems in your notebook, then take a photo!',
+                        'Tap "Draw Solution" to solve each problem with your finger!',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: Colors.blue.shade900,
                               fontWeight: FontWeight.w500,
@@ -129,16 +129,16 @@ class _ProblemDisplayScreenState extends State<ProblemDisplayScreen> {
                 ),
               ),
 
-              // Ready button
+              // Action buttons
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Navigate to camera screen
-                    context.push(
-                      '/math-practice/camera',
+                    // Navigate to drawing canvas screen
+                    context.go(
+                      '/math-practice/drawing-canvas',
                       extra: _problems,
                     );
                   },
@@ -152,13 +152,46 @@ class _ProblemDisplayScreenState extends State<ProblemDisplayScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.camera_alt, size: 28),
+                      const Icon(Icons.draw, size: 28),
                       const SizedBox(width: 12),
                       Text(
-                        'Ready to Take Photo',
+                        'Draw Solutions',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: OutlinedButton(
+                  onPressed: () {
+                    // Navigate to camera screen (alternative method)
+                    context.push(
+                      '/math-practice/camera',
+                      extra: _problems,
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Theme.of(context).colorScheme.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.camera_alt, size: 24),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Or Take Photo',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
                             ),
                       ),
                     ],
