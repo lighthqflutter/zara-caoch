@@ -1,0 +1,35 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║   🔐  CRITICAL REMINDER: THIS REPO IS PUBLIC  🔐              ║
+║                                                               ║
+║   NEVER COMMIT:                                               ║
+║   ❌ .env file                                                ║
+║   ❌ API keys (OpenAI, etc)                                   ║
+║   ❌ Passwords or tokens                                      ║
+║   ❌ credentials.json files                                   ║
+║                                                               ║
+║   ✅ PROTECTION IN PLACE:                                     ║
+║   • .gitignore blocks .env                                    ║
+║   • Pre-commit hook scans for secrets                         ║
+║   • Hook will BLOCK commits with keys                         ║
+║                                                               ║
+║   📚 Full guide: Read SECURITY.md                             ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+Quick Commands:
+--------------
+✓ Check what's being committed:  git status && git diff --cached
+✓ Verify .env is ignored:        git ls-files .env  (should be empty)
+✓ Test hook:                     .git/hooks/pre-commit
+✓ Add new secret safely:         Add to .env, never to code!
+
+If hook blocks you:
+-------------------
+1. Check what triggered it:      git diff --cached
+2. Remove the secret from code
+3. Add it to .env instead
+4. Update EnvConfig to load it
+5. See SECURITY.md for details
+
+REMEMBER: Once pushed, secrets are compromised FOREVER!
