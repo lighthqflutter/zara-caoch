@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../models/problem.dart';
+import '../../models/session.dart';
 import '../../services/ai/feedback_service.dart';
 import '../../services/voice/tts_service.dart';
 
