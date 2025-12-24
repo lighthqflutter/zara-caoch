@@ -48,3 +48,25 @@ app.*.map.json
 .env
 *.env
 !.env.example
+
+# CRITICAL: Never commit these files - they contain secrets!
+.env.local
+.env.development
+.env.production
+.env.staging
+**/secrets/
+**/credentials/
+**/*secret*
+**/*credentials*.json
+**/*key*.json
+!pubspec.lock
+!firebase_options.dart
+googleservice*.json
+GoogleService-Info.plist
+service-account*.json
+
+# iOS sensitive files
+ios/Runner/GoogleService-Info.plist
+
+# macOS sensitive files
+macos/Runner/GoogleService-Info.plist
