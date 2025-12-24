@@ -217,74 +217,116 @@ class _ProblemCard extends StatelessWidget {
 
             // Problem display (vertical format for solving)
             Center(
-              child: Column(
-                children: [
-                  // First operand
-                  Text(
-                    problem.operand1.toString().padLeft(
-                          problem.difficulty.isThreeColumn ? 3 : 2,
-                          ' ',
-                        ),
-                    style: const TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Operator and second operand
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        problem.type.symbol,
-                        style: const TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Text(
-                        problem.operand2.toString().padLeft(
-                              problem.difficulty.isThreeColumn ? 3 : 2,
-                              ' ',
-                            ),
-                        style: const TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Line
-                  Container(
-                    width: 200,
-                    height: 3,
-                    color: Colors.black87,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Answer placeholder
-                  Text(
-                    '?',
-                    style: TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                ],
-              ),
+              child: _VerticalMathProblem(problem: problem),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Widget to display a vertical math problem with proper column alignment
+class _VerticalMathProblem extends StatelessWidget {
+  final MathProblem problem;
+
+  const _VerticalMathProblem({required this.problem});
+
+  @override
+  Widget build(BuildContext context) {
+    final isThreeColumn = problem.difficulty.isThreeColumn;
+    final digitWidth = isThreeColumn ? 3 : 2;
+
+    return IntrinsicWidth(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          // First operand (right-aligned)
+          _buildNumberRow(
+            problem.operand1.toString(),
+            digitWidth,
+            showOperator: false,
+          ),
+          const SizedBox(height: 8),
+
+          // Operator and second operand (right-aligned)
+          _buildNumberRow(
+            problem.operand2.toString(),
+            digitWidth,
+            showOperator: true,
+            operator: problem.type.symbol,
+          ),
+          const SizedBox(height: 8),
+
+          // Line
+          Container(
+            height: 3,
+            color: Colors.black87,
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+          ),
+          const SizedBox(height: 16),
+
+          // Answer placeholder
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Text(
+              '?',
+              style: TextStyle(
+                fontFamily: 'Courier',
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNumberRow(
+    String number,
+    int digitWidth, {
+    bool showOperator = false,
+    String operator = '',
+  }) {
+    // Pad number to proper width
+    final paddedNumber = number.padLeft(digitWidth, ' ');
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Operator space (fixed width)
+        SizedBox(
+          width: 60,
+          child: showOperator
+              ? Text(
+                  operator,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Courier',
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+        // Number (monospace, each digit properly spaced)
+        ...paddedNumber.split('').map(
+              (char) => SizedBox(
+                width: 44, // Fixed width per digit for perfect alignment
+                child: Text(
+                  char,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Courier',
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+      ],
     );
   }
 }

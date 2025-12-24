@@ -97,8 +97,13 @@ Format your response as JSON:
 ''';
   }
 
-  /// Call OpenAI API
+  /// Call OpenAI API with timeout
   Future<String> _callOpenAI(String prompt) async {
+    // Check if API key is configured
+    if (_apiKey.isEmpty) {
+      throw Exception('OpenAI API key not configured');
+    }
+
     final response = await http.post(
       Uri.parse(_apiUrl),
       headers: {
@@ -118,6 +123,11 @@ Format your response as JSON:
         'temperature': 0.7,
         'max_tokens': 200,
       }),
+    ).timeout(
+      const Duration(seconds: 10), // 10 second timeout
+      onTimeout: () {
+        throw Exception('Request timed out');
+      },
     );
 
     if (response.statusCode == 200) {

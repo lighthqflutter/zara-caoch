@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '13.0'
+platform :ios, '15.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -33,10 +33,6 @@ target 'Runner' do
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
-  # Pin gRPC to newer versions compatible with Firebase
-  pod 'gRPC-Core', '~> 1.62.0'
-  pod 'gRPC-C++', '~> 1.62.0'
-
   target 'RunnerTests' do
     inherit! :search_paths
   end
@@ -47,7 +43,7 @@ post_install do |installer|
     flutter_additional_ios_build_settings(target)
 
     target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
       config.build_settings['SWIFT_VERSION'] = '5.0'
       config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
 
@@ -57,6 +53,9 @@ post_install do |installer|
         '$(inherited)',
         'COCOAPODS=1'
       ]
+
+      # Build settings for simulator compatibility
+      config.build_settings['ONLY_ACTIVE_ARCH'] = 'NO'
     end
 
     # CRITICAL FIX: Remove unsupported '-G' flag from BoringSSL-GRPC for simulator builds
@@ -106,5 +105,55 @@ post_install do |installer|
         puts "#{target.name} basic_seq.h file not found at any expected location"
       end
     end
+
   end
+
+  # Fix for Firebase non-modular header errors in Flutter plugins
+  puts "Fixing Firebase non-modular headers in Flutter plugins..."
+
+  # Fix in both .pub-cache and .symlinks locations
+  plugin_locations = [
+    File.join(ENV['HOME'], '.pub-cache', 'hosted', 'pub.dev'),
+    File.join(File.dirname(__FILE__), '.symlinks', 'plugins')
+  ]
+
+  ['firebase_auth', 'firebase_storage'].each do |plugin_name|
+    plugin_locations.each do |base_dir|
+      # For .pub-cache, we need to find the versioned directory
+      if base_dir.include?('.pub-cache')
+        plugin_dirs = Dir.glob("#{base_dir}/#{plugin_name}-*")
+        plugin_dirs.each do |plugin_dir|
+          classes_path = File.join(plugin_dir, 'ios', 'Classes')
+          next unless Dir.exist?(classes_path)
+
+          Dir.glob("#{classes_path}/**/*.h").each do |header_file|
+            content = File.read(header_file)
+            original = '#import <Firebase/Firebase.h>'
+
+            if content.include?(original)
+              puts "  Fixing #{File.basename(header_file)} in #{plugin_name} (pub-cache)"
+              content.gsub!(original, '@import Firebase;')
+              File.write(header_file, content)
+            end
+          end
+        end
+      else
+        # For .symlinks, direct path
+        plugin_path = File.join(base_dir, plugin_name, 'ios', 'Classes')
+        next unless Dir.exist?(plugin_path)
+
+        Dir.glob("#{plugin_path}/**/*.h").each do |header_file|
+          content = File.read(header_file)
+          original = '#import <Firebase/Firebase.h>'
+
+          if content.include?(original)
+            puts "  Fixing #{File.basename(header_file)} in #{plugin_name} (symlinks)"
+            content.gsub!(original, '@import Firebase;')
+            File.write(header_file, content)
+          end
+        end
+      end
+    end
+  end
+  puts "Firebase header fixes complete!"
 end

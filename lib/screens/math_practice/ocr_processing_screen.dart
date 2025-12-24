@@ -53,20 +53,20 @@ class _OCRProcessingScreenState extends State<OCRProcessingScreen> {
 
     if (!mounted) return;
 
-    if (result.isReliable) {
-      // OCR succeeded - go to review screen with extracted answers
+    if (result.isReliable || result.extractedAnswers.isNotEmpty) {
+      // OCR got some results - let user review them
       setState(() {
-        _statusMessage = 'Great! I can read your work!';
+        _statusMessage = 'Done! Please check if I read your answers correctly.';
       });
 
       await Future.delayed(const Duration(milliseconds: 800));
 
       if (mounted) {
         context.go(
-          '/math-practice/review',
+          '/math-practice/ocr-review',
           extra: {
             'problems': widget.problems,
-            'answers': result.extractedAnswers,
+            'ocrResult': result,
             'photoPath': widget.photoPath,
           },
         );

@@ -45,5 +45,13 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Zara Coach needs camera access to take photos of your math work for review and feedback.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Zara Coach needs microphone access for voice input during math practice sessions.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Zara Coach needs photo library access to save and retrieve photos of your math work.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Zara Coach uses speech recognition to help you practice math problems with voice input.</string>
 </dict>
 </plist>

@@ -78,14 +78,16 @@ class _ChildHomeScreenState extends State<ChildHomeScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              // Placeholder for future activities
+              // English Practice card
               _ActivityCard(
                 icon: Icons.book,
-                title: 'Reading',
-                subtitle: 'Coming soon',
+                title: 'English Practice',
+                subtitle: 'Reading & vocabulary exercises',
                 color: Colors.green,
-                isLocked: true,
-                onTap: () {},
+                isLocked: false,
+                onTap: () {
+                  context.push('/english-practice');
+                },
               ),
             ],
           ),

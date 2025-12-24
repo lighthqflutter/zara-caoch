@@ -20,24 +20,47 @@ class TTSService {
       // Set language
       await _flutterTts.setLanguage("en-US");
 
+      // Try to set a more natural-sounding voice (iOS enhanced voices)
+      // These are higher quality, more human-like voices available on iOS
+      try {
+        await _flutterTts.setVoice({
+          "name": "Samantha", // Samantha is a warm, friendly female voice on iOS
+          "locale": "en-US"
+        });
+      } catch (e) {
+        // Fallback to default voice if Samantha not available
+        // Try other high-quality iOS voices
+        try {
+          await _flutterTts.setVoice({
+            "name": "Alex", // Alex is a clear, natural male voice
+            "locale": "en-US"
+          });
+        } catch (e) {
+          // Use system default if specific voices aren't available
+        }
+      }
+
       // Set speech rate (0.0 to 1.0, default 0.5)
-      await _flutterTts.setSpeechRate(0.45); // Slightly slower for clarity
+      // Slower rate sounds more natural and easier to understand
+      await _flutterTts.setSpeechRate(0.5); // Natural conversational speed
 
       // Set volume (0.0 to 1.0)
       await _flutterTts.setVolume(1.0);
 
       // Set pitch (0.5 to 2.0, default 1.0)
-      await _flutterTts.setPitch(1.1); // Slightly higher for friendliness
+      // Pitch closer to 1.0 sounds more natural
+      await _flutterTts.setPitch(1.0); // Natural pitch
 
-      // iOS specific settings
+      // iOS specific settings for better audio quality
       await _flutterTts.setIosAudioCategory(
         IosTextToSpeechAudioCategory.playback,
         [
           IosTextToSpeechAudioCategoryOptions.allowBluetooth,
           IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
           IosTextToSpeechAudioCategoryOptions.mixWithOthers,
+          IosTextToSpeechAudioCategoryOptions.duckOthers, // Lower other audio when speaking
         ],
-        IosTextToSpeechAudioMode.defaultMode,
+        IosTextToSpeechAudioMode.spokenAudio, // Optimized for speech
       );
 
       // Set up completion handler

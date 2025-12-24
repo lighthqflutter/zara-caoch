@@ -8,12 +8,18 @@ import '../screens/math_practice/problem_display_screen.dart';
 import '../screens/math_practice/camera_screen.dart';
 import '../screens/math_practice/ocr_processing_screen.dart';
 import '../screens/math_practice/typed_input_screen.dart';
+import '../screens/math_practice/ocr_review_screen.dart';
 import '../screens/math_practice/review_screen.dart';
 import '../screens/math_practice/session_summary_screen.dart';
+import '../services/ocr/ocr_service.dart';
 import '../screens/settings/settings_screen.dart';
 import '../screens/onboarding/tutorial_screen.dart';
+import '../screens/english_practice/english_selection_screen.dart';
+import '../screens/english_practice/reading_comprehension_screen.dart';
+import '../screens/english_practice/vocabulary_practice_screen.dart';
 import '../models/problem.dart';
 import '../models/session.dart';
+import '../models/english_exercise.dart';
 
 /// Application router configuration using GoRouter
 class AppRouter {
@@ -87,6 +93,17 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: '/math-practice/ocr-review',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return OCRReviewScreen(
+            problems: extra['problems'] as List<MathProblem>,
+            ocrResult: extra['ocrResult'] as OCRResult,
+            photoPath: extra['photoPath'] as String,
+          );
+        },
+      ),
+      GoRoute(
         path: '/math-practice/review',
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>;
@@ -105,6 +122,25 @@ class AppRouter {
             attempts: extra['attempts'] as List<ProblemAttempt>,
             photoPath: extra['photoPath'] as String,
           );
+        },
+      ),
+      // English practice flow
+      GoRoute(
+        path: '/english-practice',
+        builder: (context, state) => const EnglishSelectionScreen(),
+      ),
+      GoRoute(
+        path: '/english-practice/reading',
+        builder: (context, state) {
+          final exercise = state.extra as ReadingComprehensionExercise;
+          return ReadingComprehensionScreen(exercise: exercise);
+        },
+      ),
+      GoRoute(
+        path: '/english-practice/vocabulary',
+        builder: (context, state) {
+          final exercises = state.extra as List<VocabularyExercise>;
+          return VocabularyPracticeScreen(exercises: exercises);
         },
       ),
     ],

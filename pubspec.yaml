@@ -1,5 +1,5 @@
 name: zara_coach
-description: Adaptive AI coaching app for 10-year-old with ADHD to develop skills through multimodal interaction
+description: Adaptive AI coaching app for 10-year-old to develop skills through multimodal interaction
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -17,11 +17,11 @@ dependencies:
   # State Management
   provider: ^6.1.0
 
-  # Firebase
-  firebase_core: ^2.24.0
-  firebase_auth: ^4.15.0
-  cloud_firestore: ^4.13.0
-  firebase_storage: ^11.5.0
+  # Firebase (Latest with Swift Package Manager support)
+  firebase_core: ^4.2.1
+  firebase_auth: ^6.1.2
+  cloud_firestore: ^6.1.0
+  firebase_storage: ^13.0.4
 
   # Camera & Photo
   camera: ^0.10.5
