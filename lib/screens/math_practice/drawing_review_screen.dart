@@ -125,7 +125,7 @@ class _DrawingReviewScreenState extends State<DrawingReviewScreen> {
         problem: problem,
         userAnswer: userAnswer,
         isCorrect: userAnswer == problem.correctAnswer,
-        timeSpent: const Duration(minutes: 1), // Placeholder
+        attemptTime: DateTime.now(),
       );
     }).toList();
 
