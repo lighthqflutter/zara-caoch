@@ -67,25 +67,39 @@ class _DrawingReviewScreenState extends State<DrawingReviewScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Convert answers map to list
-      final answersList = List.generate(
-        widget.problems.length,
-        (i) => _answers[i] ?? 0,
-      );
+      // Generate feedback for each problem
+      final feedbackList = <String>[];
+      int correctCount = 0;
 
-      // Get AI feedback
-      final feedback = await _feedbackService.generateFeedback(
-        widget.problems,
-        answersList,
-      );
+      for (int i = 0; i < widget.problems.length; i++) {
+        final problem = widget.problems[i];
+        final userAnswer = _answers[i] ?? 0;
+        final isCorrect = userAnswer == problem.correctAnswer;
+
+        if (isCorrect) correctCount++;
+
+        final aiFeedback = await _feedbackService.generateFeedback(
+          problem: problem,
+          userAnswer: userAnswer,
+          isCorrect: isCorrect,
+        );
+
+        feedbackList.add(
+          'Problem ${i + 1}: ${aiFeedback.message}'
+        );
+      }
+
+      // Combine all feedback
+      final combinedFeedback = 'You got $correctCount out of ${widget.problems.length} correct!\n\n' +
+          feedbackList.join('\n\n');
 
       setState(() {
-        _feedback = feedback;
+        _feedback = combinedFeedback;
         _isLoading = false;
       });
 
       // Speak the feedback
-      await _tts.speak(feedback);
+      await _tts.speak(combinedFeedback);
     } catch (e) {
       setState(() => _isLoading = false);
       if (!mounted) return;
